@@ -1,0 +1,778 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top, #fef6e4 0, #f7e9c3 40%, #f2d2b0 100%);
+  min-height: 100vh;
+}
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(111, 78, 55, 0.92), rgba(111, 78, 55, 0.85));
+  z-index: 50;
+}
+
+.top-nav-inner {
+  pointer-events: auto;
+  padding: 8px 16px;
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.top-nav-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 48px;
+  width: auto;
+  image-rendering: pixelated;
+}
+
+.top-nav-path {
+  min-width: 0;
+  padding: 4px 8px;
+  font-size: 14px;
+  color: #f6e2b5;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.top-nav-spacer {
+  width: 48px; /* 与 logo 视觉宽度接近，用来平衡左右布局 */
+  height: 1px;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px; /* 预留顶部菜单栏高度 */
+}
+
+.page {
+  width: 100%;
+  max-width: 420px;
+  margin: 32px auto;
+  padding: 24px;
+}
+
+.album-list-page {
+  max-width: 960px;
+}
+
+.login-page h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 28px;
+  color: #4f2a2a;
+}
+
+.logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.logo-image {
+  width: 280px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.subtitle {
+  margin-top: 8px;
+  text-align: center;
+  color: #7b5c3b;
+}
+
+.card {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 30px rgba(120, 82, 45, 0.18);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #5b4636;
+}
+
+.field input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e0c9a6;
+  outline: none;
+  font-size: 14px;
+}
+
+.field input:focus {
+  border-color: #e59c5b;
+  box-shadow: 0 0 0 1px rgba(229, 156, 91, 0.3);
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e59c5b, #d76b57);
+  color: #fff7e8;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 8px 20px rgba(181, 95, 56, 0.35);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  filter: brightness(1.02);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(181, 95, 56, 0.4);
+}
+
+.primary-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(181, 95, 56, 0.3);
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.hint {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #7b5c3b;
+}
+
+.auth-toggle {
+  display: flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: #f5e0b9;
+  margin-bottom: 16px;
+}
+
+.auth-toggle-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 6px 0;
+  font-size: 14px;
+  color: #7b5c3b;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-toggle-btn.active {
+  background: #f2c27b;
+  color: #4f2a2a;
+  box-shadow: 0 4px 10px rgba(162, 105, 52, 0.35);
+}
+
+.invite-card {
+  margin-top: 24px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 20px rgba(120, 82, 45, 0.15);
+}
+
+.album-list {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 640px) {
+  .album-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .album-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.album-card {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.album-card:hover {
+}
+
+.album-card-inner {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.album-card-cover-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.album-card-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.album-card-body {
+  min-height: 72px;
+}
+
+.album-card:hover .album-card-inner {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(150, 98, 52, 0.35);
+}
+
+.album-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #4f2a2a;
+}
+
+.album-card-desc {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #7b5c3b;
+}
+
+.album-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.album-list-deco {
+  width: 48px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.album-list-title {
+  margin: 0;
+  font-size: 24px;
+  color: #4f2a2a;
+}
+
+.album-list-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #7b5c3b;
+}
+
+.album-empty-card {
+  margin-top: 16px;
+}
+
+.album-empty-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.album-empty-text {
+  margin: 0;
+  font-size: 13px;
+}
+
+.fab-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: radial-gradient(circle at 30% 20%, #ffe9c4, #e59c5b);
+  color: #4f2a2a;
+  font-size: 32px;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 26px rgba(160, 90, 45, 0.55);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.fab-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(160, 90, 45, 0.65);
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.dialog-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: #fffdf6;
+  box-shadow: 0 14px 40px rgba(80, 40, 20, 0.6);
+}
+
+.dialog-card h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  color: #4f2a2a;
+}
+
+.dialog-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.secondary-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #f5e0b9;
+  color: #4f2a2a;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.album-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* 仿 stardew-memories 的相册容器样式 */
+.stardew-container {
+  border: 4px solid #4b3018;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.stardew-container-parchment {
+  background-color: #f6e2b5;
+  color: #4b3018;
+}
+
+.stardew-container-wood {
+  background-color: #6b4e31;
+  color: #f6e2b5;
+}
+
+.stardew-container-inner {
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .stardew-container-inner {
+    padding: 24px;
+  }
+}
+
+.album-detail-page {
+  max-width: 960px;
+}
+
+.back-btn {
+  margin-bottom: 12px;
+}
+
+.album-hero {
+  margin-bottom: 16px;
+}
+
+.album-hero-header {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1.2fr; /* 三列：信息 / 上传框 / 操作按钮 */
+  gap: 16px;
+}
+
+.album-hero-info {
+  min-width: 0;
+}
+
+.album-title {
+  margin: 0 0 8px;
+  font-size: 26px;
+}
+
+.album-subtitle {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #6b4e31;
+}
+
+.album-hero-upload {
+  border-radius: 12px;
+  border: 2px dashed #4b3018;
+  background: rgba(246, 226, 181, 0.8);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+.album-hero-upload-icon {
+  width: 40px;
+  height: auto;
+  margin-bottom: 6px;
+  image-rendering: pixelated;
+}
+
+.album-hero-upload-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b3018;
+}
+
+.album-hero-upload-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #7b5c3b;
+}
+
+.album-hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.delete-album-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.delete-album-icon {
+  width: 20px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.invite-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.invite-btn-icon {
+  width: 24px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.album-meta {
+  margin: 0;
+  font-size: 13px;
+  color: #8a6b45;
+}
+
+.album-detail-toolbar {
+  display: flex;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.upload-btn {
+  max-width: 180px;
+}
+
+.photo-grid-placeholder-card {
+  margin-top: 16px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 20px rgba(120, 82, 45, 0.15);
+}
+
+.photo-grid-placeholder-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4f2a2a;
+}
+
+.photo-grid-placeholder-text {
+  margin: 0;
+  font-size: 13px;
+  color: #7b5c3b;
+}
+
+.photo-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.photo-card {
+  width: 100%;
+}
+
+.photo-card-inner {
+  padding: 0;
+}
+
+/* 仅在照片卡片中，让 Stardew 容器的内部成为左右布局 */
+.photo-card-inner .stardew-container-inner {
+  padding: 0;
+  display: flex;
+  flex-direction: row; /* 左侧照片、右侧备注，始终并排 */
+}
+
+.photo-image-wrap {
+  position: relative;
+  overflow: hidden;
+  flex: 1 1 0;
+  max-width: 50%;
+}
+
+.photo-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.photo-image-button {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  width: 100%;
+  cursor: zoom-in;
+}
+
+.photo-delete-btn {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 12px;
+}
+
+.photo-remark {
+  flex: 1 1 0;
+  padding: 10px 12px 12px;
+}
+
+.photo-date {
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #8a6b45;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.photo-date-icon {
+  width: 20px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.photo-remark-text {
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #4f2a2a;
+  cursor: pointer;
+}
+
+.photo-remark-empty {
+  color: #a18a6a;
+  font-style: italic;
+}
+
+.photo-remark-edit {
+  width: 100%;
+  min-height: 48px;
+  resize: vertical;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  border-radius: 8px;
+  border: 3px solid #4b3018;
+  background: #f6e2b5;
+  color: #4b3018;
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.photo-remark-edit:focus {
+  box-shadow: 0 0 0 2px rgba(249, 191, 59, 0.6);
+}
+
+.photo-remark-saving {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #8a6b45;
+}
+
+/* 照片高清大图查看弹层 */
+.photo-viewer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.photo-viewer-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.photo-viewer-close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.photo-viewer-image-wrap {
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.photo-viewer-image {
+  display: block;
+  max-width: 100%;
+  max-height: 90vh;
+  margin: 0 auto;
+}
+
+/* Junimo 像素风加载动画 */
+.junimo-loading-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.junimo-loading-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #fffdf6;
+  box-shadow: 0 10px 30px rgba(80, 40, 20, 0.6);
+}
+
+.junimo-loading-icon {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  animation: junimo-bounce 0.9s ease-in-out infinite alternate;
+}
+
+.junimo-loading-text {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #4b3018;
+}
+
+@keyframes junimo-bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-6px);
+  }
+}
