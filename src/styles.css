@@ -127,6 +127,25 @@ body {
   color: #5b4636;
 }
 
+.checkbox-field {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #e59c5b;
+  cursor: pointer;
+}
+
+.checkbox-field span {
+  user-select: none;
+  cursor: pointer;
+}
+
 .field input {
   padding: 10px 12px;
   border-radius: 10px;
@@ -202,12 +221,79 @@ body {
   box-shadow: 0 4px 10px rgba(162, 105, 52, 0.35);
 }
 
-.invite-card {
-  margin-top: 24px;
-  padding: 16px 20px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 20px rgba(120, 82, 45, 0.15);
+/* 邀请好友弹窗（与网站 Stardew 风格统一） */
+.invite-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.invite-modal-wrap {
+  width: 100%;
+  max-width: 420px;
+}
+
+.invite-modal-card {
+  width: 100%;
+}
+
+.invite-modal-card .stardew-container-inner {
+  padding: 20px 22px;
+}
+
+.invite-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.invite-modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #4b3018;
+}
+
+.invite-modal-close {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(75, 48, 24, 0.12);
+  color: #4b3018;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.invite-modal-close:hover:not(:disabled) {
+  background: rgba(75, 48, 24, 0.22);
+}
+
+.invite-modal-close:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.invite-modal-body .field {
+  margin-bottom: 16px;
+}
+
+.invite-modal-body .hint {
+  margin-top: 10px;
+  margin-bottom: 0;
 }
 
 .album-list {
@@ -257,6 +343,22 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.album-card-no-photo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5e0b9 0%, #e8d4a8 100%);
+  border: 2px dashed #c9b896;
+}
+
+.album-card-no-photo span {
+  font-size: 14px;
+  color: #8a6b45;
+  font-style: italic;
 }
 
 .album-card-body {
@@ -365,6 +467,11 @@ body {
   box-shadow: 0 14px 40px rgba(80, 40, 20, 0.6);
 }
 
+.dialog-card-transparent {
+  width: 100%;
+  max-width: 420px;
+}
+
 .dialog-card h2 {
   margin: 0 0 12px;
   font-size: 20px;
@@ -386,6 +493,64 @@ body {
   color: #4f2a2a;
   font-size: 14px;
   cursor: pointer;
+}
+
+.danger-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #d76b57, #c44d3d);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(199, 77, 61, 0.35);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.danger-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(199, 77, 61, 0.45);
+}
+
+.danger-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* 删除确认弹窗样式 */
+.delete-confirm-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.delete-confirm-icon {
+  width: 48px;
+  height: auto;
+  margin-bottom: 12px;
+  image-rendering: pixelated;
+}
+
+.delete-confirm-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #4b3018;
+}
+
+.delete-confirm-text {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #7b5c3b;
+  line-height: 1.5;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 12px;
 }
 
 .album-detail-header {
@@ -430,6 +595,9 @@ body {
 
 .back-btn {
   margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .album-hero {
@@ -535,19 +703,30 @@ body {
   max-width: 180px;
 }
 
-.photo-grid-placeholder-card {
+.photo-grid-placeholder {
   margin-top: 16px;
-  padding: 16px 20px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 20px rgba(120, 82, 45, 0.15);
+}
+
+.photo-grid-placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.photo-grid-placeholder-icon {
+  width: 48px;
+  height: auto;
+  margin-bottom: 12px;
+  image-rendering: pixelated;
 }
 
 .photo-grid-placeholder-title {
   margin: 0 0 6px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
-  color: #4f2a2a;
+  color: #4b3018;
 }
 
 .photo-grid-placeholder-text {
@@ -732,27 +911,103 @@ body {
   margin: 0 auto;
 }
 
-/* Junimo 像素风加载动画 */
+/* Toast 通知样式 */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+}
+
+.toast-notification.toast-show {
+  transform: translateX(0);
+}
+
+.toast-notification.toast-hide {
+  transform: translateX(120%);
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 280px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  gap: 12px;
+}
+
+.bg-stardew-beige {
+  background: #f6e2b5;
+  color: #4b3018;
+}
+
+.bg-stardew-green {
+  background: #8bc34a;
+  color: white;
+}
+
+.bg-stardew-yellow {
+  background: #ffc107;
+  color: #4b3018;
+}
+
+.bg-stardew-red {
+  background: #f44336;
+  color: white;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.toast-close {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.toast-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .junimo-loading-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 1000;
   background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: auto;
+  padding: 20px;
 }
 
 .junimo-loading-card {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px 18px;
-  border-radius: 14px;
+  padding: 24px 28px;
+  border-radius: 16px;
   background: #fffdf6;
-  box-shadow: 0 10px 30px rgba(80, 40, 20, 0.6);
+  box-shadow: 0 14px 40px rgba(80, 40, 20, 0.6);
+  max-width: 300px;
+  width: 100%;
 }
 
 .junimo-loading-icon {
@@ -775,4 +1030,48 @@ body {
   to {
     transform: translateY(-6px);
   }
+}
+
+/* 相册详情页排序按钮样式 */
+.sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #5b4636;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 12px;
+}
+
+.sort-btn:hover:not(:disabled) {
+  background: rgba(212, 185, 150, 0.2);
+  color: #4b3018;
+}
+
+.sort-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sort-btn-icon {
+  width: 16px;
+  height: 16px;
+  filter: sepia(0.3) hue-rotate(-20deg) saturate(1.2);
+}
+
+/* 相册信息区域排序按钮容器 */
+.album-hero-sort {
+  margin-top: 12px;
+}
+
+.photo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

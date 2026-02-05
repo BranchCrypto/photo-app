@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabaseClient';
 import { StardewContainer } from '../components/StardewContainer';
 import { JunimoLoading } from '../components/JunimoLoading';
 import { buildOssAlbumCoverUrl } from '../utils/ossHelpers';
+import { ToastNotification } from '../components/ToastNotification';
+import { useToast } from '../hooks/useToast';
 
 
 type AlbumRow = {
@@ -14,10 +16,11 @@ type AlbumRow = {
   cover_url?: string | null;
 };
 
+
+
 export function AlbumListPage() {
   const [albums, setAlbums] = useState<AlbumRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const PAGE_SIZE = 12;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -25,15 +28,17 @@ export function AlbumListPage() {
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [creatingLoading, setCreatingLoading] = useState(false);
-  const [creatingError, setCreatingError] = useState<string | null>(null);
-
   const navigate = useNavigate();
+  const { toast, showToast, clearToast } = useToast();
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     const loadAlbums = async () => {
       try {
-        setLoading(true);
-        setError(null);
+        if (!abortController.signal.aborted) {
+          setLoading(true);
+        }
 
         const {
           data: { user },
@@ -45,6 +50,8 @@ export function AlbumListPage() {
           return;
         }
 
+        if (abortController.signal.aborted) return;
+
         // 查询当前用户参与的所有相册
         const { data, error: albumsError } = await supabase
           .from('album_members')
@@ -53,30 +60,41 @@ export function AlbumListPage() {
 
         if (albumsError) throw albumsError;
 
-        const mapped: AlbumRow[] =
-          data
-            ?.map((row: any) => row.albums)
-            .filter(Boolean) ?? [];
+        if (abortController.signal.aborted) return;
 
-        setAlbums(mapped);
-        setVisibleCount(PAGE_SIZE);
+        const mapped: AlbumRow[] = (data ?? [])
+          .map((row: any) => row.albums)
+          .filter((album): album is AlbumRow => album !== null);
+
+        if (!abortController.signal.aborted) {
+          setAlbums(mapped);
+          setVisibleCount(PAGE_SIZE);
+        }
       } catch (err: any) {
+        if (abortController.signal.aborted) return;
         console.error('Load albums error:', err);
-        setError(err.message ?? '加载相册失败');
+        if (!abortController.signal.aborted) {
+          showToast(err.message ?? '加载相册失败', 'error');
+        }
       } finally {
-        setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
-    void loadAlbums();
+    loadAlbums();
+
+    return () => {
+      abortController.abort();
+    };
   }, [navigate]);
 
   const handleCreateAlbum = async () => {
     const name = newName.trim();
     const description = newDesc.trim();
-    setCreatingError(null);
     if (!name) {
-      setCreatingError('请输入相册名');
+      showToast('请输入相册名', 'error');
       return;
     }
 
@@ -89,7 +107,7 @@ export function AlbumListPage() {
       } = await supabase.auth.getUser();
       if (userError) throw userError;
       if (!user) {
-        setCreatingError('请先登录');
+        showToast('请先登录', 'error');
         return;
       }
 
@@ -119,7 +137,7 @@ export function AlbumListPage() {
       setNewDesc('');
     } catch (err: any) {
       console.error('Create album error:', err);
-      setCreatingError(err.message ?? '创建相册失败');
+      showToast(err.message ?? '创建相册失败', 'error');
     } finally {
       setCreatingLoading(false);
     }
@@ -142,13 +160,20 @@ export function AlbumListPage() {
         </div>
       </header>
 
-      {loading && <p className="hint">正在加载相册...</p>}
-      {error && <p className="hint">加载相册失败：{error}</p>}
 
-      {!loading && !error && albums.length === 0 && (
+      {toast && (
+        <ToastNotification
+          message={toast.message}
+          type={toast.type === 'error' || toast.type === 'success' ? toast.type : 'info'}
+          duration={3000}
+          onClose={clearToast}
+        />
+      )}
+      
+      {!loading && !toast && albums.length === 0 && (
         <StardewContainer className="album-empty-card">
           <p className="album-empty-title">还没有相册</p>
-          <p className="album-empty-text">点击右下角的 “+” 创建你的第一个星露谷相册吧。</p>
+          <p className="album-empty-text">点击右下角的 "+" 创建你的第一个星露谷相册吧。</p>
         </StardewContainer>
       )}
 
@@ -162,11 +187,17 @@ export function AlbumListPage() {
           >
             <StardewContainer className="album-card-inner">
               <div className="album-card-cover-wrap">
-                <img
-                  src={buildOssAlbumCoverUrl(album.cover_url ?? null)}
-                  alt={album.name}
-                  className="album-card-cover"
-                />
+                {album.cover_url ? (
+                  <img
+                    src={buildOssAlbumCoverUrl(album.cover_url)}
+                    alt={album.name}
+                    className="album-card-cover"
+                  />
+                ) : (
+                  <div className="album-card-no-photo">
+                    <span>暂无照片</span>
+                  </div>
+                )}
               </div>
               <div className="album-card-body">
                 <div className="album-card-title">{album.name}</div>
@@ -179,7 +210,7 @@ export function AlbumListPage() {
         ))}
       </div>
 
-      {!loading && !error && albums.length > visibleCount && (
+      {!loading && !toast && albums.length > visibleCount && (
         <div style={{ marginTop: 16, textAlign: 'center' }}>
           <button
             type="button"
@@ -221,7 +252,6 @@ export function AlbumListPage() {
               />
             </label>
 
-            {creatingError && <p className="hint">{creatingError}</p>}
 
             <div className="dialog-actions">
               <button
@@ -251,7 +281,7 @@ export function AlbumListPage() {
         className="fab-btn"
         onClick={() => {
           setIsCreating(true);
-          setCreatingError(null);
+          clearToast();
         }}
       >
         +

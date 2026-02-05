@@ -24,5 +24,3 @@ export function StardewContainer({
   );
 }
 
-export default StardewContainer;
-
