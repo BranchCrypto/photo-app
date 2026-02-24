@@ -373,10 +373,15 @@ export function AlbumDetailPage() {
             {isOwner && album && (
               <button
                 type="button"
-                className="secondary-btn"
+                className="secondary-btn edit-album-btn"
                 onClick={openEditAlbumDialog}
                 disabled={loadingStates.loadingPhotos || loadingAlbumInfo}
               >
+                <img
+                  src="/images/32px-Lost_Book.png"
+                  alt=""
+                  className="edit-album-icon"
+                />
                 <span>编辑相册信息</span>
               </button>
             )}

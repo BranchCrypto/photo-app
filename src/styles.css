@@ -687,6 +687,18 @@ body {
   image-rendering: pixelated;
 }
 
+.edit-album-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.edit-album-icon {
+  width: 20px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
 .album-meta {
   margin: 0;
   font-size: 13px;
