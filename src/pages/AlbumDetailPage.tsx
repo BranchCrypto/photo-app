@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { InviteMemberForm } from '../components/InviteMemberForm';
 import { StardewContainer } from '../components/StardewContainer';
 import { JunimoLoading } from '../components/JunimoLoading';
@@ -31,6 +31,7 @@ type PhotoRow = {
 export function AlbumDetailPage() {
   const params = useParams<{ id: string }>();
   const albumId = params.id ?? '';
+  const location = useLocation();
   const [showInvite, setShowInvite] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [album, setAlbum] = useState<AlbumDetail | null>(null);
@@ -42,6 +43,10 @@ export function AlbumDetailPage() {
   const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // 默认按时间倒序（最新在前）
   const [loadingAlbumInfo, setLoadingAlbumInfo] = useState(false); // 新增：加载相册基本信息的状态
+  const [isEditingAlbum, setIsEditingAlbum] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editDesc, setEditDesc] = useState('');
+  const [savingAlbumInfo, setSavingAlbumInfo] = useState(false);
   const { toast, showToast, clearToast } = useToast();
 
   // 使用自定义Hook管理照片状态
@@ -216,6 +221,65 @@ export function AlbumDetailPage() {
     setEditingPhotoId(null);
   };
 
+  const openEditAlbumDialog = () => {
+    if (!album) return;
+    setEditName(album.name);
+    setEditDesc(album.description ?? '');
+    setIsEditingAlbum(true);
+  };
+
+  const handleSaveAlbumInfo = async () => {
+    if (!albumId || !album) return;
+    const name = editName.trim();
+    const desc = editDesc.trim();
+
+    if (!name) {
+      showToast('请输入相册名称', 'error');
+      return;
+    }
+
+    if (!isOwner) {
+      showToast('只有相册所有者可以编辑相册信息', 'error');
+      return;
+    }
+
+    try {
+      setSavingAlbumInfo(true);
+
+      const { data, error } = await supabase
+        .from('albums')
+        .update({
+          name,
+          description: desc || null,
+        })
+        .eq('id', albumId)
+        .select('id, name, description, created_by, cover_url')
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        setAlbum(data as AlbumDetail);
+      }
+
+      // 更新顶部导航中显示的相册名称
+      navigate(location.pathname, {
+        replace: true,
+        state: { ...(location.state as any), albumName: name },
+      });
+
+      showToast('相册信息已更新', 'success');
+      setIsEditingAlbum(false);
+    } catch (err: any) {
+      console.error('Update album info error:', err);
+      showToast(err.message ?? '更新相册信息失败', 'error');
+    } finally {
+      setSavingAlbumInfo(false);
+    }
+  };
+
 
   if (!albumId) {
     return (
@@ -306,6 +370,16 @@ export function AlbumDetailPage() {
                 <span>邀请好友加入相册</span>
               </button>
             )}
+            {isOwner && album && (
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={openEditAlbumDialog}
+                disabled={loadingStates.loadingPhotos || loadingAlbumInfo}
+              >
+                <span>编辑相册信息</span>
+              </button>
+            )}
             {isOwner && (
               <button 
                 type="button" 
@@ -373,6 +447,62 @@ export function AlbumDetailPage() {
                 </div>
               </div>
             </StardewContainer>
+          </div>
+        </div>
+      )}
+
+      {isEditingAlbum && album && (
+        <div
+          className="dialog-backdrop"
+          onClick={() => !savingAlbumInfo && setIsEditingAlbum(false)}
+        >
+          <div
+            className="dialog-card"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <h2>编辑相册信息</h2>
+            <label className="field">
+              <span>相册名称</span>
+              <input
+                type="text"
+                placeholder="请输入相册名称"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                disabled={savingAlbumInfo}
+              />
+            </label>
+
+            <label className="field">
+              <span>相册简介</span>
+              <input
+                type="text"
+                placeholder="简单介绍这个相册"
+                value={editDesc}
+                onChange={(e) => setEditDesc(e.target.value)}
+                disabled={savingAlbumInfo}
+              />
+            </label>
+
+            <div className="dialog-actions">
+              <button
+                type="button"
+                className="secondary-btn"
+                disabled={savingAlbumInfo}
+                onClick={() => setIsEditingAlbum(false)}
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                className="primary-btn"
+                disabled={savingAlbumInfo}
+                onClick={handleSaveAlbumInfo}
+              >
+                {savingAlbumInfo ? '保存中...' : '保存'}
+              </button>
+            </div>
           </div>
         </div>
       )}
