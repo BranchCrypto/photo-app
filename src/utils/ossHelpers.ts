@@ -1,5 +1,11 @@
 const OSS_BASE_URL = (import.meta as any).env?.VITE_OSS_BASE_URL ?? '';
 
+/** 将错误的 OSS 地域 endpoint 修正为正确地域（bucket 实际所在地） */
+function ensureCorrectOssEndpoint(url: string): string {
+  // 错误信息：bucket 在 oss-cn-hangzhou，但请求发到了 oss-cn-shanghai
+  return url.replace(/oss-cn-shanghai\.aliyuncs\.com/g, 'oss-cn-hangzhou.aliyuncs.com');
+}
+
 /**
  * 从 photo 的 oss_path（或完整 URL）解析出 OSS 的 objectName（bucket 内对象键），供 delete 使用。
  */
@@ -37,10 +43,11 @@ export function buildOssImageUrl(
 
   // 如果已经是完整 URL
   if (/^https?:\/\//i.test(ossPath)) {
+    const fixed = ensureCorrectOssEndpoint(ossPath);
     // 添加缩略图参数（避免重复）
-    if (ossPath.includes('x-oss-process=')) return ossPath;
-    const hasQuery = ossPath.includes('?');
-    return `${ossPath}${hasQuery ? '&' : '?'}x-oss-process=image/resize,w_${width}`;
+    if (fixed.includes('x-oss-process=')) return fixed;
+    const hasQuery = fixed.includes('?');
+    return `${fixed}${hasQuery ? '&' : '?'}x-oss-process=image/resize,w_${width}`;
   }
 
   // 相对路径需要拼接基础域名
@@ -48,7 +55,7 @@ export function buildOssImageUrl(
     return fallback;
   }
 
-  const base = OSS_BASE_URL.replace(/\/$/, '');
+  const base = ensureCorrectOssEndpoint(OSS_BASE_URL.replace(/\/$/, ''));
   const path = ossPath.replace(/^\//, '');
   return `${base}/${path}?x-oss-process=image/resize,w_${width}`;
 }
@@ -60,12 +67,12 @@ export function buildOssOriginalUrl(ossPath: string | null | undefined): string 
   if (!ossPath) return '';
   
   if (/^https?:\/\//i.test(ossPath)) {
-    return ossPath;
+    return ensureCorrectOssEndpoint(ossPath);
   }
 
   if (!OSS_BASE_URL) return '';
   
-  const base = OSS_BASE_URL.replace(/\/$/, '');
+  const base = ensureCorrectOssEndpoint(OSS_BASE_URL.replace(/\/$/, ''));
   const path = ossPath.replace(/^\//, '');
   return `${base}/${path}`;
 }

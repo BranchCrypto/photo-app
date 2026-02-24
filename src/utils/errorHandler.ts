@@ -43,8 +43,8 @@ export function getUserFriendlyError(errorMsg: string): string {
     return '请先登录再进行操作';
   }
   
-  // 默认情况
-  return '操作失败，请稍后重试。如问题持续存在，请联系客服。';
+  // 默认情况（改为返回登录错误）
+  return '登录错误，请检查账号或密码后重试。';
 }
 
 /**
