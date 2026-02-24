@@ -46,6 +46,7 @@ export function AlbumDetailPage() {
   const [isEditingAlbum, setIsEditingAlbum] = useState(false);
   const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
+  const [editCoverOssPath, setEditCoverOssPath] = useState<string | null>(null);
   const [savingAlbumInfo, setSavingAlbumInfo] = useState(false);
   const { toast, showToast, clearToast } = useToast();
 
@@ -225,6 +226,7 @@ export function AlbumDetailPage() {
     if (!album) return;
     setEditName(album.name);
     setEditDesc(album.description ?? '');
+    setEditCoverOssPath(album.cover_url ?? null);
     setIsEditingAlbum(true);
   };
 
@@ -251,6 +253,7 @@ export function AlbumDetailPage() {
         .update({
           name,
           description: desc || null,
+          cover_url: editCoverOssPath || null,
         })
         .eq('id', albumId)
         .select('id, name, description, created_by, cover_url')
@@ -488,6 +491,39 @@ export function AlbumDetailPage() {
                 onChange={(e) => setEditDesc(e.target.value)}
                 disabled={savingAlbumInfo}
               />
+            </label>
+
+            <label className="field">
+              <span>相册封面</span>
+              {photos.length === 0 ? (
+                <p className="edit-album-cover-hint">暂无照片，请先上传照片后再选择封面</p>
+              ) : (
+                <div className="edit-album-cover-grid">
+                  <button
+                    type="button"
+                    className={`edit-album-cover-item ${!editCoverOssPath ? 'selected' : ''}`}
+                    onClick={() => setEditCoverOssPath(null)}
+                    disabled={savingAlbumInfo}
+                  >
+                    <span className="edit-album-cover-empty">无封面</span>
+                  </button>
+                  {photos.map((photo) => (
+                    <button
+                      key={photo.id}
+                      type="button"
+                      className={`edit-album-cover-item ${editCoverOssPath === photo.oss_path ? 'selected' : ''}`}
+                      onClick={() => setEditCoverOssPath(photo.oss_path)}
+                      disabled={savingAlbumInfo}
+                    >
+                      <img
+                        src={buildOssThumbUrl(photo.oss_path)}
+                        alt=""
+                        className="edit-album-cover-thumb"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </label>
 
             <div className="dialog-actions">
